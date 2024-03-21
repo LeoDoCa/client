@@ -130,7 +130,9 @@ const RegisterUserForm = ({ isCreating, setIsCreating, getAllUsers }) => {
 
   return (
     <Modal onClose={() => closeModal()} show={isCreating} size={"4xl"}>
-      <Modal.Header title={"Registrar usuario"} />
+      <Modal.Header>
+        <h3 className="font-bold">Registro de usuario</h3>
+      </Modal.Header>
       <Modal.Body>
         <form id="userForm" name="userForm" noValidate onSubmit={formik.handleSubmit}>
           <div className="flex flex-col gap-2">
@@ -226,7 +228,7 @@ const RegisterUserForm = ({ isCreating, setIsCreating, getAllUsers }) => {
                   helperText={
                     formik.touched.confirmPassword &&
                     formik.errors.confirmPassword && (
-                      <span classname="text-red-600">
+                      <span className="text-red-600">
                         {formik.errors.confirmPassword}
                       </span>
                     )

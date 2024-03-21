@@ -18,9 +18,9 @@ import {
     2. Backend update del usuario
   */
   
-  const UpdateUserForm = ({ isCreating, setIsCreating, getAllUsers }) => {
+  const UpdateUserForm = ({ isEditing, setIsEditing, getAllUsers }) => {
     const closeModal = () => {
-      setIsCreating(false);
+      setIsEditing(false);
     };
   
     const handleChangeAvatar = (event) => {
@@ -129,8 +129,10 @@ import {
     });
   
     return (
-      <Modal onClose={() => closeModal()} show={isCreating} size={"4xl"}>
-        <Modal.Header title={"Actualizar usuario"} />
+      <Modal onClose={() => closeModal()} show={isEditing} size={"4xl"}>
+        <Modal.Header>
+        <h3 className="font-bold">Actualizar usuario</h3>
+      </Modal.Header>
         <Modal.Body>
           <form id="userForm" name="userForm" noValidate onSubmit={formik.handleSubmit}>
             <div className="flex flex-col gap-2">

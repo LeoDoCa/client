@@ -1,4 +1,4 @@
-import { TextInput, Label, Button, Card, Avatar } from 'flowbite-react'
+import { TextInput, Label, Button, Card, Avatar, Badge } from 'flowbite-react'
 import React, { useMemo, useState, useEffect } from 'react'
 import CustomDataTable from '../../../components/CustomDataTable'
 import AxiosClient from '../../../config/http-client/axios-client';
@@ -7,6 +7,7 @@ import RegisterUserForm from './components/RegisterUserForm';
 import UpdateUserForm from './components/UpdateUserForm';
 import { MdEdit } from "react-icons/md";
 import { FaUserSlash } from "react-icons/fa6";
+import { confirmAlert,customAlert } from '../../../config/alerts/alert';
 const UserPage = () => {
 
     const [loading, setLoading] = useState(false);
@@ -14,6 +15,33 @@ const UserPage = () => {
     const [users, setUsers] = useState([]);
     const [isCreating, setIsCreating] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
+
+    const changeStatus = async (row) => {
+        console.log(row);
+        confirmAlert(async () => {
+          try {
+            const response = await AxiosClient({
+              method: 'PATCH',
+              url: `/user/`,
+              data: row
+            });
+            if (!response.error) {
+              customAlert(
+                'Actualización exitosa',
+                'El estado del usuario ha sido actualizado correctamente',
+                'success'
+              );
+              getUsers();
+            }
+          } catch (error) {
+            customAlert(
+              'Error',
+              'Ha ocurrido un error, por favor intente de nuevo',
+              'error'
+            );
+          }
+        });
+      }
 
     const columns = useMemo(() => [
         {
@@ -44,12 +72,21 @@ const UserPage = () => {
             sortable: true,
         },
         {
+            name: 'Estado',
+            cell: (row) => <>{row.status ? 
+            <Badge color="success" size="sm"> Activo </Badge> 
+            :
+            <Badge color="failure" size="sm"> Inactivo </Badge>}</>,
+            selector: (row) => row.status,
+            sortable: true,
+        },
+        {
             name: 'Acciones',
             cell: (row) => (
                 <>
-                    <Button outline color='warning' onClick={()=> setIsCreating(true)} pill><MdEdit size={24}/></Button>
-                    <UpdateUserForm isCreating={isCreating} setIsCreating={setIsCreating} getAllUsers={getUsers}/>
-                    <Button color='red' pill><FaUserSlash size={24}/></Button>
+                    <Button outline color='warning' onClick={()=> setIsEditing(true)} pill><MdEdit size={24}/></Button>
+                    <UpdateUserForm isEditing={isEditing} setIsEditing={setIsEditing} getAllUsers={getUsers}/>
+                    <Button outline color='failure' pill onClick={()=> changeStatus(row)}><FaUserSlash size={24}/></Button>
                 </>
             ),
         },

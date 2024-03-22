@@ -10,11 +10,17 @@ import { FaUserSlash } from "react-icons/fa6";
 import { confirmAlert,customAlert } from '../../../config/alerts/alert';
 const UserPage = () => {
 
+    const [selectedUser, setSelectedUser] = useState(null);
     const [loading, setLoading] = useState(false);
     const [filterText, setFilterText] = useState('');
     const [users, setUsers] = useState([]);
     const [isCreating, setIsCreating] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
+
+    const handleClickEdit = (user) => {
+        setSelectedUser(user);
+        setIsEditing(true);
+    };
 
     const changeStatus = async (row) => {
         console.log(row);
@@ -22,8 +28,15 @@ const UserPage = () => {
           try {
             const response = await AxiosClient({
               method: 'PATCH',
-              url: `/user/`,
-              data: row
+              url: `/user/${row.id}`,
+              data:{
+                user:{
+                    id: row.id,
+                    username: row.username,
+                    password: row.password,
+                    status: row.status
+                }
+              }
             });
             if (!response.error) {
               customAlert(
@@ -84,8 +97,8 @@ const UserPage = () => {
             name: 'Acciones',
             cell: (row) => (
                 <>
-                    <Button outline color='warning' onClick={()=> setIsEditing(true)} pill><MdEdit size={24}/></Button>
-                    <UpdateUserForm isEditing={isEditing} setIsEditing={setIsEditing} getAllUsers={getUsers}/>
+                    <Button outline color='warning' onClick={()=> handleClickEdit(row)} pill><MdEdit size={24}/></Button>
+                    <UpdateUserForm isEditing={isEditing} setIsEditing={setIsEditing} getAllUsers={getUsers} selectedUser={selectedUser}/>
                     <Button outline color='failure' pill onClick={()=> changeStatus(row)}><FaUserSlash size={24}/></Button>
                 </>
             ),
